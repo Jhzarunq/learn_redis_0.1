@@ -798,6 +798,13 @@ int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData) {
     return 1000;
 }
 
+/*
+With an error message (the first byte of the reply will be "-")
+With a single line reply (the first byte of the reply will be "+)
+With bulk data (the first byte of the reply will be "$")
+With multi-bulk data, a list of values (the first byte of the reply will be "*")
+With an integer number (the first byte of the reply will be ":")
+*/
 static void createSharedObjects(void) {
     shared.crlf = createObject(REDIS_STRING,sdsnew("\r\n"));
     shared.ok = createObject(REDIS_STRING,sdsnew("+OK\r\n"));
@@ -1705,6 +1712,9 @@ static int rdbSaveTime(FILE *fp, time_t t) {
     return 0;
 }
 
+/*
+参见 REDIS_RDB_6BITLEN 的注释，长度的写入和长度的数值有不同的技巧
+*/
 /* check rdbLoadLen() comments for more info */
 static int rdbSaveLen(FILE *fp, uint32_t len) {
     unsigned char buf[2];
@@ -1728,6 +1738,9 @@ static int rdbSaveLen(FILE *fp, uint32_t len) {
     return 0;
 }
 
+/*
+将没有空白字符的字符串 s 转换成数字，并返回编码好的字符串。并返回编码的字节数。
+*/
 /* String objects in the form "2391" "-100" without any space and with a
  * range of values that can fit in an 8, 16 or 32 bit signed value can be
  * encoded as integers to save space */
@@ -1766,6 +1779,13 @@ int rdbTryIntegerEncoding(sds s, unsigned char *enc) {
     }
 }
 
+/*
+将 obj->ptr 指向的数据压缩并写入文件:
+    首 8 字节是类型，表明后面的字节数据是被压缩的
+    压缩长度
+    原数据长度
+    压缩后的数据
+*/
 static int rdbSaveLzfStringObject(FILE *fp, robj *obj) {
     unsigned int comprlen, outlen;
     unsigned char byte;
