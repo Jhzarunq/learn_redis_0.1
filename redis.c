@@ -211,7 +211,7 @@ struct redisServer {
     redisDb *db;
     dict *sharingpool;
     unsigned int sharingpoolsize;
-    long long dirty;            /* changes to DB from the last save */
+    long long dirty;            /* changes to DB from the last save 单位是次数 */
     list *clients;
     list *slaves, *monitors;
     char neterr[ANET_ERR_LEN];
@@ -225,19 +225,19 @@ struct redisServer {
     long long stat_numcommands;    /* number of processed commands */
     long long stat_numconnections; /* number of connections received */
     /* Configuration */
-    int verbosity;
-    int glueoutputbuf;
-    int maxidletime;
+    int verbosity;      /*大于此等级的日志才会被写入log文件*/
+    int glueoutputbuf;  /*是否把较小的包合并成一个包发送*/
+    int maxidletime;    /*客户端和服务端没有交互被踢掉的最长时间间隔，单位是秒*/
     int dbnum;
     int daemonize;
     char *pidfile;
-    int bgsaveinprogress;
-    struct saveparam *saveparams;
+    int bgsaveinprogress;   /*标识后台是否正在将内存数据写入到磁盘*/
+    struct saveparam *saveparams;   /*持久化策略*/
     int saveparamslen;
     char *logfile;
     char *bindaddr;
     char *dbfilename;
-    char *requirepass;
+    char *requirepass;  /*密码登录*/
     int shareobjects;
     /* Replication related */
     int isslave;
@@ -245,7 +245,7 @@ struct redisServer {
     int masterport;
     redisClient *master;    /* client that is master for this slave */
     int replstate;
-    unsigned int maxclients;
+    unsigned int maxclients;    /*最大客户端连接数，为0则表示无限制*/
     /* Sort parameters - qsort_r() is only available under BSD so we
      * have to take this state global, in order to pass it to sortCompare() */
     int sort_desc;
