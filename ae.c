@@ -59,6 +59,11 @@ void aeStop(aeEventLoop *eventLoop) {
     eventLoop->stop = 1;
 }
 
+/*
+在事件列表的头部插入 io 事件。
+finalizerProc: 删除 io 事件的时候触发
+clientData: 猜测，用户自己设置的用来标识 io 事件，在回调函数中会进行传递
+*/
 int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
         aeFileProc *proc, void *clientData,
         aeEventFinalizerProc *finalizerProc)
@@ -183,6 +188,9 @@ static aeTimeEvent *aeSearchNearestTimer(aeEventLoop *eventLoop)
     return nearest;
 }
 
+/*
+事件循环
+*/
 /* Process every pending time event, then every pending file event
  * (that may be registered by time event callbacks just processed).
  * Without special flags the function sleeps until some file event
@@ -321,6 +329,7 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
                  * by event handlers itself in order to don't loop forever.
                  * To do so we saved the max ID we want to handle. */
                 if (retval != AE_NOMORE) {
+                    /*设置此定时器下一次的触发时间*/
                     aeAddMillisecondsToNow(retval,&te->when_sec,&te->when_ms);
                 } else {
                     aeDeleteTimeEvent(eventLoop, id);

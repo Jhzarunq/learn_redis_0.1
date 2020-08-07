@@ -55,7 +55,7 @@ typedef struct aeTimeEvent {
     long long id; /* time event identifier. */
     long when_sec; /* seconds */
     long when_ms; /* milliseconds */
-    aeTimeProc *timeProc;
+    aeTimeProc *timeProc;       /*返回 AE_NOMORE 表示是单次定时器事件*/
     aeEventFinalizerProc *finalizerProc;
     void *clientData;
     struct aeTimeEvent *next;

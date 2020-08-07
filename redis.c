@@ -183,7 +183,7 @@ typedef struct redisClient {
     int fd;
     redisDb *db;
     int dictid;
-    sds querybuf;
+    sds querybuf;           /*客户端发过来的数据存放*/
     robj **argv;
     int argc;
     int bulklen;            /* bulk read len. -1 if not in bulk read mode */

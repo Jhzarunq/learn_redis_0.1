@@ -60,8 +60,8 @@ typedef struct dictType {
 typedef struct dict {
     dictEntry **table;
     dictType *type;
-    unsigned long size;
-    unsigned long sizemask;
+    unsigned long size;         // 大小应该都是 2 的倍数，表示的是 dictEntry 的个数
+    unsigned long sizemask;     // 应该是 size - 1
     unsigned long used;
     void *privdata;
 } dict;
